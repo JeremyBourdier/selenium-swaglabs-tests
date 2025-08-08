@@ -7,6 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 
+# Fixture que prepara el driver, hace login y añade un item al carrito
 @pytest.fixture
 def driver():
     chrome_options = Options()
@@ -24,6 +25,7 @@ def driver():
     yield driver
     driver.quit()
 
+# Prueba del flujo de compra completo
 def test_compra_exitosa(driver):
     driver.find_element(By.CLASS_NAME, "shopping_cart_link").click()
     driver.find_element(By.ID, "checkout").click()
@@ -42,3 +44,29 @@ def test_compra_exitosa(driver):
         EC.visibility_of_element_located((By.CLASS_NAME, "complete-header"))
     )
     assert mensaje_final.text == "Thank you for your order!"
+
+# Prueba negativa de checkout sin nombre
+def test_checkout_sin_nombre(driver):
+    driver.find_element(By.CLASS_NAME, "shopping_cart_link").click()
+    driver.find_element(By.ID, "checkout").click()
+    
+    # Rellena el formulario SIN el nombre
+    driver.find_element(By.ID, "last-name").send_keys("Perez")
+    driver.find_element(By.ID, "postal-code").send_keys("10101")
+    driver.find_element(By.ID, "continue").click()
+
+    # Verificación del mensaje de error
+    mensaje_error = driver.find_element(By.CSS_SELECTOR, "h3[data-test='error']").text
+    assert "First Name is required" in mensaje_error
+
+# Prueba de límite para cancelar el checkout
+def test_cancelar_checkout(driver):
+    driver.find_element(By.CLASS_NAME, "shopping_cart_link").click()
+    driver.find_element(By.ID, "checkout").click()
+
+    # Cancela el checkout
+    driver.find_element(By.ID, "cancel").click()
+
+    # Verificación: Debemos volver a la página del carrito
+    url_actual = driver.current_url
+    assert "cart.html" in url_actual
