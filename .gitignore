@@ -1,0 +1,13 @@
+# Entorno Virtual
+venv/
+
+# Archivos de caché de Python
+__pycache__/
+*.pyc
+
+# Reportes generados
+#reporte_pruebas.html
+
+# Archivos de configuración del editor
+.vscode/
+.idea/
