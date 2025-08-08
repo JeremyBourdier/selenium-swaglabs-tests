@@ -26,3 +26,15 @@ def test_anadir_producto_al_carrito(driver):
     # Verifica que el ícono del carrito ahora muestre "1"
     icono_carrito = driver.find_element(By.CLASS_NAME, "shopping_cart_badge").text
     assert icono_carrito == "1"
+
+# Prueba para quitar un item del carrito
+def test_quitar_producto_del_carrito(driver):
+    #añade un producto para poder quitarlo
+    driver.find_element(By.CLASS_NAME, "btn_inventory").click()
+
+    # Ahora quita el producto
+    driver.find_element(By.CLASS_NAME, "btn_inventory").click()
+
+    # Verifica que el ícono del carrito desaparece
+    elementos_carrito = driver.find_elements(By.CLASS_NAME, "shopping_cart_badge")
+    assert len(elementos_carrito) == 0
