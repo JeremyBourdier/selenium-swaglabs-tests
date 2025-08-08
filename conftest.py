@@ -1,4 +1,5 @@
 import pytest
+import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -6,8 +7,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 
 @pytest.fixture
-def driver():
-    """Fixture base: solo abre y cierra un navegador limpio."""
+def driver(request):
+    """Fixture base: abre, configura y cierra un navegador limpio."""
     chrome_options = Options()
     chrome_options.add_experimental_option("prefs", {
         "credentials_enable_service": False,
@@ -15,7 +16,20 @@ def driver():
     })
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=chrome_options)
+    
     yield driver
+    
+    # Lógica para la captura de pantalla
+    if not os.path.exists('screenshots'):
+        os.makedirs('screenshots')
+
+    # Obtiene el nombre de la prueba que acaba de ejecutarse
+    test_name = request.node.name
+    
+    # Guarda la captura
+    driver.save_screenshot(f"screenshots/{test_name}.png")
+    # ----------------------------------------
+
     driver.quit()
 
 @pytest.fixture
