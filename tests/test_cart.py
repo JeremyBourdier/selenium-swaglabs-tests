@@ -29,12 +29,33 @@ def test_anadir_producto_al_carrito(driver):
 
 # Prueba para quitar un item del carrito
 def test_quitar_producto_del_carrito(driver):
-    #añade un producto para poder quitarlo
+    # Primero, añade un producto para poder quitarlo
     driver.find_element(By.CLASS_NAME, "btn_inventory").click()
 
-    # Ahora quita el producto
+    # Ahora, quita el producto
     driver.find_element(By.CLASS_NAME, "btn_inventory").click()
 
     # Verifica que el ícono del carrito desaparece
     elementos_carrito = driver.find_elements(By.CLASS_NAME, "shopping_cart_badge")
     assert len(elementos_carrito) == 0
+
+# Prueba de checkout con carrito vacío
+# Prueba de checkout con carrito vacío
+def test_checkout_carrito_vacio(driver):
+    # Ve al carrito directamente sin añadir productos
+    driver.find_element(By.CLASS_NAME, "shopping_cart_link").click()
+
+    # Intenta hacer checkout
+    driver.find_element(By.ID, "checkout").click()
+
+    # Rellena el formulario
+    driver.find_element(By.ID, "first-name").send_keys("Test")
+    driver.find_element(By.ID, "last-name").send_keys("User")
+    driver.find_element(By.ID, "postal-code").send_keys("12345")
+
+    # Intenta continuar
+    driver.find_element(By.ID, "continue").click()
+
+    # La URL no debe cambiar, nos quedamos en la misma página
+    url_actual = driver.current_url
+    assert url_actual == "https://www.saucedemo.com/checkout-step-one.html"
